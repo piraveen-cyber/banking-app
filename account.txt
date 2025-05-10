@@ -1,0 +1,1 @@
+{'account_number': 'ACC74227241', 'customer_id': 'cus14507840', 'name': 'rakee', 'age': 20, 'phone': 114525369, 'nic': '5454', 'balance': 0}
