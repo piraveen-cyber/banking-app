@@ -1,5 +1,6 @@
 import os
 import random
+import hashlib
 from datetime import datetime
 
 accounts = {}  # Dictionary to store accounts
@@ -27,6 +28,10 @@ def generate_account_number():
 def generate_customer_id():
     return "cus" + str(random.randint(10000000, 99999999))
 
+def hash_password(password):
+    """Hashes the password using SHA-256"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
 def create_account():
     try:
         name = input("👤 Enter Name: ")
@@ -43,6 +48,7 @@ def create_account():
             print("❗ Phone must be 10 digits")
             return
 
+        # Generate customer and account IDs
         cus_id = generate_customer_id()
         acc_num = generate_account_number()
 
@@ -51,6 +57,7 @@ def create_account():
         while any(acc.get("customer_id") == cus_id for acc in accounts.values()):
             cus_id = generate_customer_id()
 
+        # Account data
         account_data = {
             "name": name,
             "age": int(age),
@@ -59,7 +66,7 @@ def create_account():
             "balance": 0,
             "transactions": [],
             "username": username,
-            "password": password,
+            "password": hash_password(password),  # Store hashed password
             "customer_id": cus_id
         }
 
@@ -72,7 +79,7 @@ def create_account():
         # Save user credentials 
         user_data = {
             "username": username,
-            "password": password,
+            "password": account_data["password"],  # Store hashed password
             "customer_id": cus_id
         }
         with open("user.txt", "a") as f_user:
@@ -99,8 +106,10 @@ def create_account():
 def login_customer():
     username = input("👥 Enter Username: ")
     password = input("🔑 Enter Password: ")
+    # Hash the password to compare with stored hashed password
+    hashed_password = hash_password(password)
     for acc_num, data in accounts.items():
-        if data["username"] == username and data["password"] == password:
+        if data["username"] == username and data["password"] == hashed_password:
             print("✅ Login Successful!\n")
             return acc_num
     print("❌ Invalid credentials.")
@@ -153,15 +162,47 @@ def view_transactions(acc_num):
     else:
         print("❗ No transaction file found.")
 
+def transfer_money(acc_num):
+    try:
+        to_account = input("🔑 Enter the recipient's Account Number: ")
+        if to_account not in accounts:
+            print("❌ Invalid Account Number.")
+            return
+        amount = float(input("💸 Enter amount to transfer: "))
+        if amount <= 0:
+            print("❗ Must be positive.")
+            return
+        if accounts[acc_num]["balance"] < amount:
+            print("❌ Insufficient balance.")
+            return
+        accounts[acc_num]["balance"] -= amount
+        accounts[to_account]["balance"] += amount
+
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        message = f"{timestamp} - Transferred: {amount} to {to_account}"
+        accounts[acc_num]["transactions"].append(message)
+        accounts[to_account]["transactions"].append(f"{timestamp} - Received: {amount} from {acc_num}")
+        
+        # Log transaction
+        with open(f"transactions/{acc_num}.txt", "a") as f:
+            f.write(message + "\n")
+        with open(f"transactions/{to_account}.txt", "a") as f:
+            f.write(f"{timestamp} - Received: {amount} from {acc_num}\n")
+
+        print("✅ Transfer Successful.")
+    except Exception:
+        print("⚠️ Invalid input.")
+
 def customer_menu(acc_num):
     while True:
         print(f"\n🏦 Welcome {accounts[acc_num]['name']} ({acc_num})")
-        print("""
- 1️⃣  Deposit
- 2️⃣  Withdraw
- 3️⃣  Check Balance
- 4️⃣  View Transactions
- 5️⃣  Logout
+        print(""" 
+1️⃣  Deposit
+2️⃣  Withdraw
+3️⃣  Check Balance
+4️⃣  View Transactions
+5️⃣  Transfer Money
+6️⃣  Logout
         """)
         choice = input("👉 Choose: ")
         if choice == "1":
@@ -173,6 +214,8 @@ def customer_menu(acc_num):
         elif choice == "4":
             view_transactions(acc_num)
         elif choice == "5":
+            transfer_money(acc_num)
+        elif choice == "6":
             print("🔓 Logged out.")
             break
         else:

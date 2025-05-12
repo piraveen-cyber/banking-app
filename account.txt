@@ -1,1 +1,2 @@
-{'account_number': 'ACC74227241', 'customer_id': 'cus14507840', 'name': 'rakee', 'age': 20, 'phone': 114525369, 'nic': '5454', 'balance': 0}
+{'account_number': 'ACC43568729', 'customer_id': 'cus18478111', 'name': 'shaanu', 'age': 22, 'phone': 774521369, 'nic': '20025885558', 'balance': 0}
+{'account_number': 'ACC90918333', 'customer_id': 'cus65919981', 'name': 'piraveenan', 'age': 22, 'phone': 774521369, 'nic': '20025845123', 'balance': 0}

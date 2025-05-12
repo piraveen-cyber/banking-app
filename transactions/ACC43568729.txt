@@ -1,0 +1,4 @@
+Account created.
+2025-05-12 11:23:18 - Deposited: 50000.0
+2025-05-12 11:23:27 - Withdrew: 500.0
+2025-05-12 11:23:59 - Transferred: 4800.0 to ACC90918333
