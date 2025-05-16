@@ -33,6 +33,7 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 def create_account():
+   if verify_admin():
     try:
         name = input("👤 Enter Name: ")
         age = input("🎂 Enter Age: ")
