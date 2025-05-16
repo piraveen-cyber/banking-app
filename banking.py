@@ -243,5 +243,4 @@ def main_menu():
             print("❌ Invalid option")
 
 if __name__ == "__main__":
-    if verify_admin():
         main_menu()
